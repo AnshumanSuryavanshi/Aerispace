@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aerispace Ultimate</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { DEFAULT: '#034EA2', dark: '#60A5FA' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --pulse-color: rgba(3, 78, 162, 0.4);
+        }
+        html.dark {
+            --pulse-color: rgba(96, 165, 250, 0.4);
+        }
+
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        html.dark .glass-panel { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .soft-shadow { box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05); }
+        html.dark .soft-shadow { box-shadow: 0 20px 40px -15px rgba(0,0,0,0.4); }
+        
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0.5s; }
+        .slide-in { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .pulse-ring { box-shadow: 0 0 0 0 var(--pulse-color); animation: pulse-brand 2s infinite cubic-bezier(0.66, 0, 0, 1); }
+        @keyframes pulse-brand {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 var(--pulse-color); }
+            70% { transform: scale(1); box-shadow: 0 0 0 30px rgba(0,0,0,0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+        }
+        
+        .blob { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-[#F5F5F7] dark:bg-slate-950 text-slate-800 dark:text-slate-100 h-screen overflow-hidden flex flex-col transition-colors duration-500" id="body">
+
+    <div id="splash" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center transition-all duration-700">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-brand rounded-full mix-blend-screen filter blur-[80px] opacity-50 blob"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-400 rounded-full mix-blend-screen filter blur-[80px] opacity-30 blob" style="animation-delay: 2s;"></div>
+        </div>
+        
+        <div class="relative z-10 flex flex-col items-center w-full px-6">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl backdrop-blur-xl border border-white/20 dark:border-slate-700 shadow-2xl mb-6 transition-colors duration-500">
+                <img src="logo.png" alt="Aerispace Logo" class="w-24 h-24 object-contain drop-shadow-lg" />
+            </div>
+
+            <h1 class="text-4xl font-extrabold text-white tracking-tight mb-2 text-center">Aerispace</h1>
+            <p class="text-slate-400 text-sm font-medium mb-10 tracking-widest uppercase text-center">The Ultimate Focus Engine</p>
+            
+            <button onclick="startApp()" class="bg-brand dark:bg-brand-dark hover:opacity-90 text-white px-10 py-4 rounded-full font-bold shadow-[0_0_40px_rgba(3,78,162,0.4)] active:scale-95 transition-all flex items-center justify-center gap-2 w-full max-w-xs cursor-pointer">
+                <i data-lucide="headphones" class="w-5 h-5"></i> Enter Workspace
+            </button>
+            <p class="text-xs text-slate-500 mt-4"><i data-lucide="info" class="w-3 h-3 inline"></i> Enables Audio Engine</p>
+        </div>
+
+        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-50 pointer-events-none z-0">
+            <span class="text-[9px] font-bold tracking-[0.3em] uppercase text-slate-400 mb-1">Powered By</span>
+            <span class="text-xs font-extrabold tracking-widest text-slate-200">ANSHUMAN LABS.</span>
+        </div>
+    </div>
+
+    <div class="px-6 py-4 flex justify-between items-center glass-panel z-10 transition-colors duration-500">
+        <div class="flex items-center gap-3">
+            <div class="bg-white dark:bg-slate-800 p-1.5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors duration-500 flex items-center justify-center">
+                <img src="logo.png" class="w-5 h-5 object-contain" />
+            </div>
+            <h1 class="font-extrabold text-lg tracking-tight">Aerispace</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                <i data-lucide="moon" id="theme-icon" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>
+            </button>
+            <div id="clock-display" class="text-xs font-mono opacity-60 font-bold bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full shadow-sm border border-slate-200 dark:border-slate-700">00:00</div>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto no-scrollbar p-6 pb-32 relative">
+        
+        <div id="view-timer" class="h-full flex flex-col items-center justify-center pb-6 slide-in">
+            <div class="flex p-1.5 rounded-full bg-white dark:bg-slate-800 soft-shadow mb-8 transition-colors duration-500" id="mode-tabs">
+                <button onclick="setMode('focus')" id="tab-focus" class="px-6 py-2 rounded-full text-sm font-bold transition-all bg-brand dark:bg-brand-dark text-white shadow-md">Focus</button>
+                <button onclick="setMode('shortBreak')" id="tab-shortBreak" class="px-6 py-2 rounded-full text-sm font-bold transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">Short</button>
+                <button onclick="setMode('longBreak')" id="tab-longBreak" class="px-6 py-2 rounded-full text-sm font-bold transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">Long</button>
+            </div>
+
+            <div class="relative w-72 h-72 flex items-center justify-center">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 288 288" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="144" cy="144" r="136" stroke="currentColor" stroke-width="6" fill="none" class="text-slate-200 dark:text-slate-800 transition-colors duration-500"/>
+                    <circle id="progress-ring" cx="144" cy="144" r="136" stroke="currentColor" stroke-width="6" fill="none" class="text-brand dark:text-brand-dark transition-all duration-200 ease-linear origin-center -rotate-90" stroke-dasharray="854.5" stroke-dashoffset="0" stroke-linecap="round"/>
+                </svg>
+
+                <div id="clock-circle" class="flex flex-col items-center justify-center bg-white dark:bg-slate-800 rounded-full w-64 h-64 soft-shadow z-10 transition-colors duration-500 border border-slate-50 dark:border-slate-700">
+                    <div id="time-display" class="text-6xl font-mono font-extrabold tracking-tighter">25:00</div>
+                    <div id="status-display" class="text-brand dark:text-brand-dark font-bold uppercase tracking-widest text-xs mt-3 bg-brand/10 px-3 py-1 rounded-full">READY</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 mt-10 w-full max-w-xs">
+                <button id="btn-main" onclick="toggleTimer()" class="flex-1 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 text-white dark:text-slate-900 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all cursor-pointer">
+                    <i data-lucide="play" class="fill-current w-5 h-5"></i> <span id="btn-main-text">Start</span>
+                </button>
+                <button onclick="resetTimer(true)" class="p-4 rounded-2xl bg-white dark:bg-slate-800 soft-shadow text-slate-400 hover:text-brand transition-colors cursor-pointer">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="mt-8 w-full max-w-xs">
+                <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-2 rounded-2xl soft-shadow transition-colors">
+                    <button onclick="toggleAmbient('rain')" id="amb-rain" class="p-3 rounded-xl text-slate-300 dark:text-slate-600 hover:text-blue-500 transition-colors"><i data-lucide="cloud-rain" class="w-5 h-5"></i></button>
+                    <button onclick="toggleAmbient('cafe')" id="amb-cafe" class="p-3 rounded-xl text-slate-300 dark:text-slate-600 hover:text-amber-600 transition-colors"><i data-lucide="coffee" class="w-5 h-5"></i></button>
+                    <button onclick="toggleAmbient('fire')" id="amb-fire" class="p-3 rounded-xl text-slate-300 dark:text-slate-600 hover:text-orange-500 transition-colors"><i data-lucide="flame" class="w-5 h-5"></i></button>
+                    <button onclick="toggleAmbient('brown')" id="amb-brown" class="p-3 rounded-xl text-slate-300 dark:text-slate-600 hover:text-stone-500 transition-colors"><i data-lucide="waves" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-stats" class="hidden space-y-4 slide-in max-w-md mx-auto">
+            <div class="p-6 rounded-3xl flex items-center gap-4 bg-white dark:bg-slate-800 soft-shadow transition-colors">
+                <div class="w-16 h-16 rounded-full bg-brand dark:bg-brand-dark flex items-center justify-center text-2xl font-bold text-white shadow-lg" id="profile-initial">G</div>
+                <div>
+                    <h2 class="text-xl font-bold" id="profile-name">Guest</h2>
+                    <p class="text-xs opacity-60 font-mono mt-1">Lifetime Focus: <span id="total-lifetime" class="text-brand dark:text-brand-dark font-bold">0h</span></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-5 rounded-3xl bg-white dark:bg-slate-800 soft-shadow transition-colors">
+                    <div class="opacity-50 text-[10px] font-bold uppercase tracking-wider mb-1">Today</div>
+                    <div id="stat-today" class="text-3xl font-bold text-brand dark:text-brand-dark font-mono">0m</div>
+                </div>
+                <div class="p-5 rounded-3xl bg-white dark:bg-slate-800 soft-shadow transition-colors">
+                    <div class="opacity-50 text-[10px] font-bold uppercase tracking-wider mb-1">This Month</div>
+                    <div id="stat-month" class="text-3xl font-bold text-blue-500 font-mono">0h</div>
+                </div>
+            </div>
+
+            <div class="p-5 rounded-3xl bg-white dark:bg-slate-800 soft-shadow transition-colors">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-sm">Session History</h3>
+                    <button onclick="exportData()" class="text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-brand dark:text-brand-dark px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer">
+                        <i data-lucide="download" class="w-3 h-3"></i> Export
+                    </button>
+                </div>
+                <div id="history-list" class="space-y-3 max-h-64 overflow-y-auto pr-2 no-scrollbar"></div>
+            </div>
+        </div>
+
+        <div id="view-settings" class="hidden space-y-6 slide-in max-w-md mx-auto">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl soft-shadow transition-colors">
+                <h3 class="text-xs font-bold uppercase text-slate-400 mb-4">Profile</h3>
+                <input type="text" id="input-name" placeholder="Enter your name" class="w-full bg-slate-50 dark:bg-slate-900 border-none py-3 px-4 rounded-xl font-bold focus:ring-2 focus:ring-brand outline-none dark:text-white transition-colors">
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl soft-shadow transition-colors">
+                <h3 class="text-xs font-bold uppercase text-slate-400 mb-4">System Preferences</h3>
+                <div class="flex justify-between items-center mb-5">
+                    <span class="font-medium text-sm">Haptic Vibration</span>
+                    <button onclick="toggleVibration()" id="btn-vibrate" class="w-12 h-6 bg-brand rounded-full relative transition-colors cursor-pointer">
+                        <div id="knob-vibrate" class="absolute top-1 left-7 w-4 h-4 bg-white rounded-full transition-all"></div>
+                    </button>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <span class="font-medium text-sm">Test Alarm Sound</span>
+                    <button onclick="testAlarm()" class="text-brand dark:text-brand-dark text-xs font-bold px-4 py-2 rounded-lg bg-brand/10 hover:bg-brand/20 transition-colors flex items-center gap-2 cursor-pointer">
+                        <i data-lucide="bell" class="w-3 h-3"></i> Play
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl soft-shadow transition-colors">
+                <h3 class="text-xs font-bold uppercase text-slate-400 mb-4">Timer Durations (Min)</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900 p-2 rounded-xl">
+                        <span class="text-sm font-bold pl-2">Focus Time</span>
+                        <input type="number" id="input-focus" class="w-16 bg-transparent text-center font-bold outline-none dark:text-white">
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900 p-2 rounded-xl">
+                        <span class="text-sm font-bold pl-2">Short Break</span>
+                        <input type="number" id="input-short" class="w-16 bg-transparent text-center font-bold outline-none dark:text-white">
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900 p-2 rounded-xl">
+                        <span class="text-sm font-bold pl-2">Long Break</span>
+                        <input type="number" id="input-long" class="w-16 bg-transparent text-center font-bold outline-none dark:text-white">
+                    </div>
+                    <button onclick="saveSettings()" class="w-full bg-brand dark:bg-brand-dark text-white font-bold text-sm py-3 rounded-xl shadow-lg mt-4 active:scale-95 transition-all cursor-pointer">
+                        Save All Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 w-full glass-panel pb-6 pt-3 z-40 transition-colors duration-500">
+        <div class="flex justify-around items-center max-w-md mx-auto">
+            <button onclick="switchTab('timer')" id="nav-timer" class="flex-1 flex flex-col items-center gap-1 text-brand dark:text-brand-dark transition-colors cursor-pointer">
+                <i data-lucide="timer" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold">Focus</span>
+            </button>
+            <button onclick="switchTab('stats')" id="nav-stats" class="flex-1 flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer">
+                <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold">Stats</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="flex-1 flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer">
+                <i data-lucide="settings-2" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold">Settings</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // 1. DATA SANITIZER: Wipes corrupted memory and guarantees clean startup
+        const defaultData = { user: "Guest", config: { focus: 25, short: 5, long: 15, theme: 'light', vibrate: true }, logs: [] };
+        let appData;
+
+        try {
+            const rawData = localStorage.getItem('aerispace_data');
+            if(rawData) {
+                const parsed = JSON.parse(rawData);
+                appData = {
+                    user: parsed.user || "Guest",
+                    config: {
+                        focus: parsed.config?.focus || 25,
+                        short: parsed.config?.short || 5,
+                        long: parsed.config?.long || 15,
+                        theme: parsed.config?.theme || 'light',
+                        vibrate: parsed.config?.vibrate ?? true
+                    },
+                    logs: Array.isArray(parsed.logs) ? parsed.logs : []
+                };
+            } else {
+                appData = JSON.parse(JSON.stringify(defaultData));
+            }
+        } catch(e) {
+            // Absolute reset if memory is corrupted
+            appData = JSON.parse(JSON.stringify(defaultData));
+            localStorage.setItem('aerispace_data', JSON.stringify(appData));
+        }
+
+        // 2. THEME INITALIZATION
+        if(appData.config.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            const tIcon = document.getElementById('theme-icon');
+            if(tIcon) tIcon.setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
+
+        // 3. UI POPULATION
+        document.getElementById('input-name').value = appData.user;
+        document.getElementById('input-focus').value = appData.config.focus;
+        document.getElementById('input-short').value = appData.config.short;
+        document.getElementById('input-long').value = appData.config.long;
+        
+        updateProfileUI();
+        updateVibrateUI();
+        updateStatsUI();
+
+        setInterval(() => {
+            const clockEl = document.getElementById('clock-display');
+            if(clockEl) clockEl.innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
+
+        // 4. TIMER ENGINE (Protected from NaN errors)
+        let timer = { 
+            mode: 'focus', 
+            timeLeft: appData.config.focus * 60, 
+            isActive: false, 
+            interval: null, 
+            totalSeconds: appData.config.focus * 60 
+        };
+        const circleSvg = document.getElementById('progress-ring');
+        const circumference = 854.5; 
+        updateTimerUI(); // Render clock immediately on load
+
+        function toggleTimer() {
+            if(timer.isActive) {
+                clearInterval(timer.interval);
+                timer.isActive = false;
+            } else {
+                timer.isActive = true;
+                timer.targetTime = Date.now() + (timer.timeLeft * 1000);
+                timer.interval = setInterval(tick, 200);
+            }
+            updateTimerUI();
+        }
+
+        function tick() {
+            const now = Date.now();
+            const remaining = Math.ceil((timer.targetTime - now) / 1000);
+            if(remaining <= 0) {
+                timer.timeLeft = 0;
+                completeSession();
+            } else {
+                timer.timeLeft = remaining;
+            }
+            updateTimerUI();
+        }
+
+        function completeSession() {
+            clearInterval(timer.interval);
+            timer.isActive = false;
+            if(chime) chime.play();
+            if(appData.config.vibrate && navigator.vibrate) navigator.vibrate([300, 100, 300]);
+            if(timer.mode === 'focus') logSession(appData.config.focus * 60, 'Focus Session');
+            
+            updateTimerUI();
+            setTimeout(() => resetTimer(), 1500);
+        }
+
+        function resetTimer() {
+            clearInterval(timer.interval);
+            timer.isActive = false;
+            let mins = appData.config.focus;
+            if(timer.mode === 'shortBreak') mins = appData.config.short;
+            if(timer.mode === 'longBreak') mins = appData.config.long;
+            
+            timer.totalSeconds = mins * 60;
+            timer.timeLeft = timer.totalSeconds;
+            updateTimerUI();
+        }
+
+        function updateTimerUI() {
+            const m = Math.floor(timer.timeLeft / 60);
+            const s = timer.timeLeft % 60;
+            const disp = document.getElementById('time-display');
+            if(disp) disp.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            
+            if(circleSvg) {
+                const offset = circumference - ((timer.timeLeft / timer.totalSeconds) * circumference);
+                circleSvg.style.strokeDashoffset = offset;
+            }
+
+            const btnMain = document.getElementById('btn-main');
+            const btnText = document.getElementById('btn-main-text');
+            const status = document.getElementById('status-display');
+            const clockCircle = document.getElementById('clock-circle');
+
+            if(!btnMain || !status || !clockCircle) return;
+
+            if(timer.isActive) {
+                btnMain.classList.replace('bg-slate-900', 'bg-amber-500');
+                btnMain.classList.replace('dark:bg-slate-100', 'dark:bg-amber-500');
+                btnMain.classList.replace('text-white', 'text-slate-900');
+                btnMain.classList.replace('dark:text-slate-900', 'dark:text-slate-900');
+                if(btnText) btnText.innerText = "Pause";
+                status.innerText = "RUNNING";
+                clockCircle.classList.add('pulse-ring');
+            } else {
+                btnMain.classList.replace('bg-amber-500', 'bg-slate-900');
+                btnMain.classList.replace('dark:bg-amber-500', 'dark:bg-slate-100');
+                btnMain.classList.replace('text-slate-900', 'text-white');
+                btnMain.classList.replace('dark:text-slate-900', 'dark:text-slate-900');
+                if(btnText) btnText.innerText = "Start";
+                status.innerText = timer.timeLeft === timer.totalSeconds ? "READY" : "PAUSED";
+                clockCircle.classList.remove('pulse-ring');
+            }
+        }
+
+        // 5. AUDIO & BOOT ENGINE
+        let chime = null, bootSound = null, ambients = {};
+        let audioUnlocked = false;
+
+        function startApp() {
+            const splash = document.getElementById('splash');
+            if(splash) {
+                splash.classList.add('fade-out');
+                setTimeout(() => splash.remove(), 600);
+            }
+            if(!audioUnlocked && typeof Howl !== 'undefined') {
+                bootSound = new Howl({ src: ['sounds/app_booting_sound.mp3'], volume: 0.8 });
+                chime = new Howl({ src: ['sounds/chime.mp3'], volume: 1.0 });
+                ambients = {
+                    rain: new Howl({ src: ['sounds/rain.mp3'], loop: true, volume: 0.5 }),
+                    cafe: new Howl({ src: ['sounds/cafe.mp3'], loop: true, volume: 0.5 }),
+                    fire: new Howl({ src: ['sounds/fire.mp3'], loop: true, volume: 0.5 }),
+                    brown: new Howl({ src: ['sounds/brown_noise.mp3'], loop: true, volume: 0.3 })
+                };
+                audioUnlocked = true;
+            }
+            if(bootSound) bootSound.play();
+        }
+
+        // 6. UI & SETTINGS HELPERS
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const icon = document.getElementById('theme-icon');
+            if (!isDark) {
+                document.documentElement.classList.add('dark');
+                if(icon) icon.setAttribute('data-lucide', 'sun');
+                appData.config.theme = 'dark';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if(icon) icon.setAttribute('data-lucide', 'moon');
+                appData.config.theme = 'light';
+            }
+            lucide.createIcons();
+            saveData();
+        }
+
+        function toggleVibration() {
+            appData.config.vibrate = !appData.config.vibrate;
+            updateVibrateUI();
+            saveData();
+            if(appData.config.vibrate && navigator.vibrate) navigator.vibrate(100);
+        }
+
+        function updateVibrateUI() {
+            const btn = document.getElementById('btn-vibrate');
+            const knob = document.getElementById('knob-vibrate');
+            if(!btn || !knob) return;
+            if(appData.config.vibrate) {
+                btn.classList.add('bg-brand'); btn.classList.remove('bg-slate-300', 'dark:bg-slate-600');
+                knob.className = "absolute top-1 left-7 w-4 h-4 bg-white rounded-full transition-all";
+            } else {
+                btn.classList.remove('bg-brand'); btn.classList.add('bg-slate-300', 'dark:bg-slate-600');
+                knob.className = "absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all";
+            }
+        }
+
+        function saveSettings() {
+            appData.user = document.getElementById('input-name').value || "Guest";
+            appData.config.focus = parseInt(document.getElementById('input-focus').value) || 25;
+            appData.config.short = parseInt(document.getElementById('input-short').value) || 5;
+            appData.config.long = parseInt(document.getElementById('input-long').value) || 15;
+            saveData();
+            updateProfileUI();
+            resetTimer(true);
+            alert("All Settings Saved!");
+        }
+
+        function updateProfileUI() {
+            const nameEl = document.getElementById('profile-name');
+            const initEl = document.getElementById('profile-initial');
+            if(nameEl) nameEl.innerText = appData.user;
+            if(initEl) initEl.innerText = appData.user.charAt(0).toUpperCase();
+        }
+
+        function saveData() { localStorage.setItem('aerispace_data', JSON.stringify(appData)); }
+
+        function logSession(duration, type) {
+            const now = new Date();
+            appData.logs.unshift({
+                id: Date.now(),
+                date: now.toLocaleDateString(),
+                timestamp: now.getTime(),
+                time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                duration: duration,
+                type: type
+            });
+            saveData();
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            const list = document.getElementById('history-list');
+            if(!list) return;
+            list.innerHTML = '';
+            
+            let todaySec = 0, monthSec = 0, lifeSec = 0;
+            const todayStr = new Date().toLocaleDateString();
+            const monthCutoff = Date.now() - (30 * 24 * 60 * 60 * 1000);
+
+            appData.logs.forEach(l => {
+                lifeSec += l.duration;
+                if(l.date === todayStr) todaySec += l.duration;
+                if(l.timestamp > monthCutoff) monthSec += l.duration;
+            });
+
+            const sToday = document.getElementById('stat-today');
+            const sMonth = document.getElementById('stat-month');
+            const sLife = document.getElementById('total-lifetime');
+            if(sToday) sToday.innerText = `${Math.floor(todaySec/60)}m`;
+            if(sMonth) sMonth.innerText = `${(monthSec/3600).toFixed(1)}h`;
+            if(sLife) sLife.innerText = `${(lifeSec/3600).toFixed(1)}h`;
+
+            if(appData.logs.length === 0) {
+                list.innerHTML = '<div class="text-center text-slate-500 text-xs py-4">No sessions completed yet</div>';
+            } else {
+                appData.logs.slice(0, 30).forEach(log => {
+                    const el = document.createElement('div');
+                    el.className = "flex justify-between items-center text-sm border-b border-slate-100 dark:border-slate-700/50 pb-3 mb-2";
+                    el.innerHTML = `<div><div class="font-bold opacity-80">${log.type}</div><div class="text-[10px] opacity-50 font-mono">${log.date} • ${log.time}</div></div><div class="font-mono text-brand dark:text-brand-dark font-bold">${Math.floor(log.duration/60)}m</div>`;
+                    list.appendChild(el);
+                });
+            }
+        }
+
+        function switchTab(tab) {
+            ['timer', 'stats', 'settings'].forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                const navBtn = document.getElementById(`nav-${t}`);
+                if(!view || !navBtn) return;
+                if(t === tab) {
+                    view.classList.remove('hidden');
+                    navBtn.classList.add('text-brand', 'dark:text-brand-dark');
+                    navBtn.classList.remove('text-slate-400', 'dark:text-slate-300');
+                } else {
+                    view.classList.add('hidden');
+                    navBtn.classList.remove('text-brand', 'dark:text-brand-dark');
+                    navBtn.classList.add('text-slate-400', 'dark:text-slate-300');
+                }
+            });
+        }
+
+        function setMode(mode) {
+            timer.mode = mode;
+            ['focus', 'shortBreak', 'longBreak'].forEach(m => {
+                const btn = document.getElementById(`tab-${m}`);
+                if(!btn) return;
+                if(m === mode) {
+                    btn.classList.add('bg-brand', 'dark:bg-brand-dark', 'text-white', 'shadow-md');
+                    btn.classList.remove('text-slate-400', 'hover:text-slate-600');
+                } else {
+                    btn.classList.remove('bg-brand', 'dark:bg-brand-dark', 'text-white', 'shadow-md');
+                    btn.classList.add('text-slate-400', 'hover:text-slate-600');
+                }
+            });
+            resetTimer();
+        }
+
+        function testAlarm() { if(chime) chime.play(); }
+        
+        let activeAmbient = null;
+        function toggleAmbient(type) {
+            if(!audioUnlocked || !ambients || !ambients[type]) return;
+            if(activeAmbient && activeAmbient !== type) {
+                ambients[activeAmbient].stop();
+                const oldBtn = document.getElementById(`amb-${activeAmbient}`);
+                if(oldBtn) oldBtn.classList.remove('text-brand', 'dark:text-brand-dark', 'bg-brand/10');
+            }
+            const btn = document.getElementById(`amb-${type}`);
+            if(!btn) return;
+            if(ambients[type].playing()) {
+                ambients[type].pause();
+                activeAmbient = null;
+                btn.classList.remove('text-brand', 'dark:text-brand-dark', 'bg-brand/10');
+            } else {
+                ambients[type].play();
+                activeAmbient = type;
+                btn.classList.add('text-brand', 'dark:text-brand-dark', 'bg-brand/10');
+            }
+        }
+
+        function exportData() {
+            let csv = "Date,Time,Type,Duration(sec)\n";
+            appData.logs.forEach(l => csv += `${l.date},${l.time},${l.type},${l.duration}\n`);
+            const textarea = document.createElement("textarea");
+            textarea.value = csv;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            alert("Data copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
