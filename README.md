@@ -21,7 +21,3 @@ Aerispace is a minimalist, clutter-free Pomodoro timer designed to maximize prod
 ## 🚀 Getting Started
 
 Aerispace is a completely client-side application. No build tools or complex installations are required!
-
-1. Clone this repository:
-   ```bash
-   git clone [https://github.com/AnshumanSuryavanshi/aerispace.git](https://github.com/AnshumanSuryavanshi/aerispace.git)
